@@ -21,7 +21,7 @@ class Creator {
   final String result;
   final String notes;
 
-  Creator({
+  const Creator({
     this.rowNumber,
     required this.creatorName,
     this.platform = '',
@@ -45,92 +45,59 @@ class Creator {
     this.notes = '',
   });
 
-  /// FIXED: Handles both String and int/double types
+  // ✅ fromJson (clean + safe)
   factory Creator.fromJson(Map<String, dynamic> json) {
     return Creator(
-      rowNumber: _parseToInt(json['rowNumber']),
-      creatorName: _parseToString(json['creatorName']),
-      platform: _parseToString(json['platform']),
-      niche: _parseToString(json['niche']),
-      followerCount: _parseToString(json['followerCount']),
-      engagementRate: _parseToString(json['engagementRate']),
-      address: _parseToString(json['address']),
-      phoneNumber: _parseToString(json['phoneNumber']),
-      outreachStatus: _parseToString(json['outreachStatus']),
-      firstMessageSent: _parseToString(json['firstMessageSent']),
-      lastFollowUp: _parseToString(json['lastFollowUp']),
-      collaborationType: _parseToString(json['collaborationType']),
-      whatTheyAskedFor: _parseToString(json['whatTheyAskedFor']),
-      finalAgreedTerms: _parseToString(json['finalAgreedTerms']),
-      productSent: _parseToString(json['productSent']),
-      addPermission: _parseToString(json['addPermission']),
-      isApproved: _parseToBool(json['isApproved']),
-      postingDate: _parseToString(json['postingDate']),
-      contentLink: _parseToString(json['contentLink']),
-      result: _parseToString(json['result']),
-      notes: _parseToString(json['notes']),
+      rowNumber: _toInt(json['rowNumber']),
+      creatorName: _toStr(json['creatorName']),
+      platform: _toStr(json['platform']),
+      niche: _toStr(json['niche']),
+      followerCount: _toStr(json['followerCount']),
+      engagementRate: _toStr(json['engagementRate']),
+      address: _toStr(json['address']),
+      phoneNumber: _toStr(json['phoneNumber']),
+      outreachStatus: _toStr(json['outreachStatus']),
+      firstMessageSent: _toStr(json['firstMessageSent']),
+      lastFollowUp: _toStr(json['lastFollowUp']),
+      collaborationType: _toStr(json['collaborationType']),
+      whatTheyAskedFor: _toStr(json['whatTheyAskedFor']),
+      finalAgreedTerms: _toStr(json['finalAgreedTerms']),
+      productSent: _toStr(json['productSent']),
+      addPermission: _toStr(json['addPermission']),
+      isApproved: _toBool(json['isApproved']),
+      postingDate: _toStr(json['postingDate']),
+      contentLink: _toStr(json['contentLink']),
+      result: _toStr(json['result']),
+      notes: _toStr(json['notes']),
     );
   }
 
-  /// Helper: Parse to String safely (handles int, double, null)
-  static String _parseToString(dynamic value) {
-    if (value == null) return '';
-    if (value is String) return value;
-    if (value is int || value is double || value is num) return value.toString();
-    if (value is bool) return value.toString();
-    return value.toString();
-  }
+  // ✅ toJson
+  Map<String, dynamic> toJson() => {
+        if (rowNumber != null) 'rowNumber': rowNumber,
+        'creatorName': creatorName,
+        'platform': platform,
+        'niche': niche,
+        'followerCount': followerCount,
+        'engagementRate': engagementRate,
+        'address': address,
+        'phoneNumber': phoneNumber,
+        'outreachStatus': outreachStatus,
+        'firstMessageSent': firstMessageSent,
+        'lastFollowUp': lastFollowUp,
+        'collaborationType': collaborationType,
+        'whatTheyAskedFor': whatTheyAskedFor,
+        'finalAgreedTerms': finalAgreedTerms,
+        'productSent': productSent,
+        'addPermission': addPermission,
+        'isApproved': isApproved,
+        'postingDate': postingDate,
+        'contentLink': contentLink,
+        'result': result,
+        'notes': notes,
+      };
 
-  /// Helper: Parse to int safely
-  static int? _parseToInt(dynamic value) {
-    if (value == null) return null;
-    if (value is int) return value;
-    if (value is double) return value.toInt();
-    if (value is String) {
-      final parsed = int.tryParse(value);
-      return parsed;
-    }
-    return null;
-  }
-
-  /// Helper: Parse to bool safely
-  static bool _parseToBool(dynamic value) {
-    if (value == null) return false;
-    if (value is bool) return value;
-    if (value is String) {
-      final lower = value.toLowerCase();
-      return lower == 'true' || lower == '1' || lower == 'yes';
-    }
-    if (value is int) return value != 0;
-    return false;
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      if (rowNumber != null) 'rowNumber': rowNumber,
-      'creatorName': creatorName,
-      'platform': platform,
-      'niche': niche,
-      'followerCount': followerCount,
-      'engagementRate': engagementRate,
-      'address': address,
-      'phoneNumber': phoneNumber,
-      'outreachStatus': outreachStatus,
-      'firstMessageSent': firstMessageSent,
-      'lastFollowUp': lastFollowUp,
-      'collaborationType': collaborationType,
-      'whatTheyAskedFor': whatTheyAskedFor,
-      'finalAgreedTerms': finalAgreedTerms,
-      'productSent': productSent,
-      'addPermission': addPermission,
-      'isApproved': isApproved,
-      'postingDate': postingDate,
-      'contentLink': contentLink,
-      'result': result,
-      'notes': notes,
-    };
-  }
-
+  // ✅ copyWith
   Creator copyWith({
     int? rowNumber,
     String? creatorName,
@@ -179,17 +146,13 @@ class Creator {
     );
   }
 
-  @override
-  String toString() {
-    return 'Creator(rowNumber: $rowNumber, name: $creatorName, platform: $platform)';
-  }
+  // ---------- helpers (minimal but safe) ----------
 
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is Creator && other.rowNumber == rowNumber;
-  }
+  static String _toStr(dynamic v) => v?.toString() ?? '';
 
-  @override
-  int get hashCode => rowNumber.hashCode;
+  static int? _toInt(dynamic v) =>
+      v is int ? v : int.tryParse(v?.toString() ?? '');
+
+  static bool _toBool(dynamic v) =>
+      v is bool ? v : v?.toString().toLowerCase() == 'true';
 }

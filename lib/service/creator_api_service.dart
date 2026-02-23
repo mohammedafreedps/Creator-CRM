@@ -22,10 +22,7 @@ class CreatorApiService {
   Future<List<Creator>> getAllCreators() async {
     try {
       final response = await _client
-          .get(
-            Uri.parse(baseUrl),
-            headers: _getHeaders(),
-          )
+          .get(Uri.parse(baseUrl), headers: _getHeaders())
           .timeout(timeout);
 
       final data = _handleResponse(response);
@@ -38,7 +35,9 @@ class CreatorApiService {
           .map((json) => Creator.fromJson(json as Map<String, dynamic>))
           .toList();
     } on SocketException {
-      throw NetworkException('No internet connection. Please check your network.');
+      throw NetworkException(
+        'No internet connection. Please check your network.',
+      );
     } on TimeoutException {
       throw NetworkException('Request timeout. Please try again.');
     } on http.ClientException catch (e) {
@@ -54,10 +53,7 @@ class CreatorApiService {
     _validateCreatorName(creator.creatorName);
 
     try {
-      final payload = {
-        'action': 'add',
-        ...creator.toJson(),
-      };
+      final payload = {'action': 'add', ...creator.toJson()};
 
       final response = await _client
           .post(
@@ -67,7 +63,7 @@ class CreatorApiService {
           )
           .timeout(timeout);
 
-      final data = _handleResponse(response);
+      final data = _handleResponse(response, allowHtmlSuccess: true);
 
       if (data is! Map<String, dynamic>) {
         throw ApiException('Invalid response format: Expected Map');
@@ -76,7 +72,9 @@ class CreatorApiService {
       final rowNumber = data['rowNumber'] as int?;
       return creator.copyWith(rowNumber: rowNumber);
     } on SocketException {
-      throw NetworkException('No internet connection. Please check your network.');
+      throw NetworkException(
+        'No internet connection. Please check your network.',
+      );
     } on TimeoutException {
       throw NetworkException('Request timeout. Please try again.');
     } on http.ClientException catch (e) {
@@ -95,10 +93,7 @@ class CreatorApiService {
     _validateCreatorName(creator.creatorName);
 
     try {
-      final payload = {
-        'action': 'update',
-        ...creator.toJson(),
-      };
+      final payload = {'action': 'update', ...creator.toJson()};
 
       final response = await _client
           .post(
@@ -108,10 +103,12 @@ class CreatorApiService {
           )
           .timeout(timeout);
 
-      _handleResponse(response);
+      _handleResponse(response,allowHtmlSuccess: true);
       return creator;
     } on SocketException {
-      throw NetworkException('No internet connection. Please check your network.');
+      throw NetworkException(
+        'No internet connection. Please check your network.',
+      );
     } on TimeoutException {
       throw NetworkException('Request timeout. Please try again.');
     } on http.ClientException catch (e) {
@@ -129,10 +126,7 @@ class CreatorApiService {
     }
 
     try {
-      final payload = {
-        'action': 'delete',
-        'rowNumber': rowNumber,
-      };
+      final payload = {'action': 'delete', 'rowNumber': rowNumber};
 
       final response = await _client
           .post(
@@ -142,9 +136,11 @@ class CreatorApiService {
           )
           .timeout(timeout);
 
-      _handleResponse(response);
+      _handleResponse(response,allowHtmlSuccess: true);
     } on SocketException {
-      throw NetworkException('No internet connection. Please check your network.');
+      throw NetworkException(
+        'No internet connection. Please check your network.',
+      );
     } on TimeoutException {
       throw NetworkException('Request timeout. Please try again.');
     } on http.ClientException catch (e) {
@@ -158,28 +154,52 @@ class CreatorApiService {
   // ==================== PRIVATE HELPERS ====================
 
   Map<String, String> _getHeaders() {
-    return {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
+    return {'Content-Type': 'application/json', 'Accept': 'application/json'};
   }
 
-  dynamic _handleResponse(http.Response response) {
-    // Parse JSON
-    dynamic responseData;
-    try {
-      responseData = json.decode(response.body);
-    } catch (e) {
-      throw ApiException('Invalid JSON response: ${response.body}');
+  dynamic _handleResponse(
+    http.Response response, {
+    bool allowHtmlSuccess = false,
+  }) {
+    final body = response.body.trim();
+
+    // 🔥 Detect Google Apps Script HTML redirect
+    final isHtml =
+        body.startsWith('<!DOCTYPE html') ||
+        body.startsWith('<HTML') ||
+        body.contains('<TITLE>Moved Temporarily</TITLE>');
+
+    // ✅ If HTML is allowed (POST success case), treat as success
+    if (isHtml) {
+      if (allowHtmlSuccess &&
+          (response.statusCode == 200 ||
+              response.statusCode == 302 ||
+              response.statusCode == 301)) {
+        return {'success': true};
+      }
+
+      // Otherwise it's a real error
+      throw ApiException(
+        'Invalid HTML response received',
+        statusCode: response.statusCode,
+      );
     }
 
-    // Check for API error field
+    // ================= JSON PARSE =================
+    dynamic responseData;
+    try {
+      responseData = json.decode(body);
+    } catch (e) {
+      throw ApiException('Invalid JSON response: $body');
+    }
+
+    // ================= API ERROR FIELD =================
     if (responseData is Map && responseData.containsKey('error')) {
       final errorMsg = responseData['error'] as String;
       throw _createExceptionFromStatusCode(response.statusCode, errorMsg);
     }
 
-    // Handle HTTP status codes
+    // ================= STATUS CODE HANDLING =================
     switch (response.statusCode) {
       case 200:
       case 201:

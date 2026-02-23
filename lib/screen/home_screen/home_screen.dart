@@ -1,32 +1,11 @@
 import 'package:creator_tracker/models/creator.dart';
-import 'package:creator_tracker/repository/creator_repository.dart';
 import 'package:creator_tracker/screen/home_screen/cubit/creator_cubit/creator_cubit.dart';
 import 'package:creator_tracker/screen/home_screen/cubit/creator_cubit/creator_state.dart';
-import 'package:creator_tracker/service/creator_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
-class CreatorScreen extends StatelessWidget {
-  const CreatorScreen({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        final apiService = CreatorApiService(
-          baseUrl: 'https://script.google.com/macros/s/AKfycbyaI2K-vL08-Ku5DKHlp3P1DTqefRPuciU6g23v3jokKTYiHaaZS55JURWshyy21bsT/exec',
-        );
-        final repository = CreatorRepository(apiService);
-        return CreatorCubit(repository)..fetchCreators();
-      },
-      child: const CreatorView(),
-    );
-  }
-}
-
-class CreatorView extends StatelessWidget {
-  const CreatorView({Key? key}) : super(key: key);
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
