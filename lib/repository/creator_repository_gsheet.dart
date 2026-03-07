@@ -6,7 +6,6 @@ class CreatorRepository {
 
   Future<int> createCreator(Creator creator) async {
     try {
-
       final db = await DatabaseService.database;
 
       return await db.insert(
@@ -16,13 +15,12 @@ class CreatorRepository {
       );
 
     } catch (e) {
-      throw Exception("Create Creator Failed: $e");
+      throw Exception("Failed to create creator: $e");
     }
   }
 
   Future<List<Creator>> getCreators() async {
     try {
-
       final db = await DatabaseService.database;
 
       final result = await db.query("creators");
@@ -30,13 +28,12 @@ class CreatorRepository {
       return result.map((e) => Creator.fromMap(e)).toList();
 
     } catch (e) {
-      throw Exception("Fetch Creators Failed: $e");
+      throw Exception("Failed to fetch creators: $e");
     }
   }
 
   Future<int> updateCreator(Creator creator) async {
     try {
-
       final db = await DatabaseService.database;
 
       return await db.update(
@@ -47,13 +44,12 @@ class CreatorRepository {
       );
 
     } catch (e) {
-      throw Exception("Update Creator Failed: $e");
+      throw Exception("Failed to update creator: $e");
     }
   }
 
   Future<int> deleteCreator(int id) async {
     try {
-
       final db = await DatabaseService.database;
 
       return await db.delete(
@@ -63,7 +59,7 @@ class CreatorRepository {
       );
 
     } catch (e) {
-      throw Exception("Delete Creator Failed: $e");
+      throw Exception("Failed to delete creator: $e");
     }
   }
 }
