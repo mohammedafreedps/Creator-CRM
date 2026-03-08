@@ -65,7 +65,6 @@ class DatabaseService {
       asked_price REAL,
       final_price REAL,
       deliverables TEXT,
-      post_count INTEGER,
       status TEXT
     )
     ''');
@@ -92,11 +91,6 @@ class DatabaseService {
       posting_date TEXT,
       content_link TEXT,
       ad_permission INTEGER,
-      views INTEGER,
-      likes INTEGER,
-      comments INTEGER,
-      shares INTEGER,
-      saves INTEGER
     )
     ''');
 
