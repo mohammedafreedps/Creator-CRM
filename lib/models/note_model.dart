@@ -2,7 +2,7 @@ class Note {
 
   final int? id;
   final int creatorId;
-  final String note;
+  final String? note;
   final String createdAt;
 
   Note({
@@ -25,7 +25,7 @@ class Note {
     return Note(
       id: map["id"],
       creatorId: map["creator_id"],
-      note: map["note"],
+      note: map["note"] ?? '',
       createdAt: map["created_at"],
     );
   }

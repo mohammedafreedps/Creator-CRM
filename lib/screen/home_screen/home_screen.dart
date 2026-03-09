@@ -1,7 +1,9 @@
 import 'package:afui/afui.dart';
 import 'package:creator_tracker/screen/add_creator_screen/add_creator_screen.dart';
+import 'package:creator_tracker/screen/creator_details_screen/creator_details_screen.dart';
 import 'package:creator_tracker/screen/home_screen/cubit/cubit/show_all_creator_cubit.dart';
 import 'package:creator_tracker/utils/format_date.dart';
+import 'package:creator_tracker/widgets/app_filter_chip.dart';
 import 'package:creator_tracker/widgets/app_snackbar.dart';
 import 'package:creator_tracker/widgets/app_textfield.dart';
 import 'package:flutter/material.dart';
@@ -100,9 +102,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         vertical: context.spacing.s1,
                       ),
                       label: Text('data dsfsadfadf'),
-                      onSelected: (value) {
-                        
-                      },
+                      onSelected: (value) {},
+                    ),
+                    AppFilterChip(
+                      isSelected: false,
+                      label: 'text',
+                      onSelected: (value) {},
                     ),
                   ],
                 ),
@@ -128,7 +133,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           controller: _scrollController,
                           itemCount: state.creators.length,
                           itemBuilder: (context, index) => GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CreatorDetailsScreen(
+                                    creatorId:
+                                        state.creators[index].creator.id!,
+                                  ),
+                                ),
+                              );
+                            },
                             child: Container(
                               margin: EdgeInsets.only(
                                 bottom: context.spacing.s5,
@@ -161,12 +176,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: context.af.spacing.s3,),
+                                  SizedBox(height: context.af.spacing.s3),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(formatDate(state.creators[index].outreach?.firstMessageDate,),style: Theme.of(context).textTheme.bodySmall,),
-                                      Text(state.creators[index].outreach?.status ?? 'No Outreach')],
+                                      Text(
+                                        formatDate(
+                                          state
+                                              .creators[index]
+                                              .outreach
+                                              ?.firstMessageDate,
+                                        ),
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodySmall,
+                                      ),
+                                      Text(
+                                        state
+                                                .creators[index]
+                                                .outreach
+                                                ?.status ??
+                                            'No Outreach',
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),

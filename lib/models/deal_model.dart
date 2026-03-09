@@ -7,7 +7,7 @@ class Deal {
   final double? finalPrice;
   final String? deliverables;
   final int? productCount;
-  final String status;
+  final String? status;
 
   Deal({
     this.id,
@@ -37,12 +37,12 @@ class Deal {
     return Deal(
       id: map["id"],
       creatorId: map["creator_id"],
-      collaborationType: map["collaboration_type"],
-      askedPrice: map["asked_price"],
-      finalPrice: map["final_price"],
-      deliverables: map["deliverables"],
-      productCount: map["product_count"],
-      status: map["status"],
+      collaborationType: map["collaboration_type"] ?? '',
+      askedPrice: map["asked_price"] ?? '',
+      finalPrice: map["final_price"]  ?? '',
+      deliverables: map["deliverables"] ?? '',
+      productCount: map["product_count"] ?? 0,
+      status: map["status"]  ?? '',
     );
   }
 }

@@ -119,6 +119,7 @@ class DatabaseService {
       status TEXT,
       payment_date TEXT,
       payment_method TEXT,
+      payed_date TEXT
       invoice_number TEXT,
       FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE
     )
