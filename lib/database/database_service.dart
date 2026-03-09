@@ -16,10 +16,13 @@ class DatabaseService {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, "creator_crm.db");
 
-    return await openDatabase(
+    return openDatabase(
       path,
       version: 1,
       onCreate: _createTables,
+      onConfigure: (db) async {
+        await db.execute("PRAGMA foreign_keys = ON");
+      },
     );
   }
 
@@ -53,7 +56,8 @@ class DatabaseService {
       last_followup_date TEXT,
       next_followup_date TEXT,
       communication_channel TEXT,
-      followup_count INTEGER
+      followup_count INTEGER,
+      FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE
     )
     ''');
 
@@ -65,7 +69,8 @@ class DatabaseService {
       asked_price REAL,
       final_price REAL,
       deliverables TEXT,
-      status TEXT
+      status TEXT,
+      FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE
     )
     ''');
 
@@ -78,7 +83,8 @@ class DatabaseService {
       courier TEXT,
       tracking_number TEXT,
       dispatch_date TEXT,
-      delivery_date TEXT
+      delivery_date TEXT,
+      FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE
     )
     ''');
 
@@ -91,6 +97,7 @@ class DatabaseService {
       posting_date TEXT,
       content_link TEXT,
       ad_permission INTEGER,
+      FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE
     )
     ''');
 
@@ -99,7 +106,8 @@ class DatabaseService {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       creator_id INTEGER,
       note TEXT,
-      created_at TEXT
+      created_at TEXT,
+      FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE
     )
     ''');
 
@@ -111,7 +119,8 @@ class DatabaseService {
       status TEXT,
       payment_date TEXT,
       payment_method TEXT,
-      invoice_number TEXT
+      invoice_number TEXT,
+      FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE
     )
     ''');
 
@@ -122,10 +131,9 @@ class DatabaseService {
       title TEXT,
       description TEXT,
       reminder_date TEXT,
-      completed INTEGER
+      completed INTEGER,
+      FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE
     )
     ''');
-
   }
-
 }

@@ -6,7 +6,7 @@ class Deal {
   final double? askedPrice;
   final double? finalPrice;
   final String? deliverables;
-  final int? postCount;
+  final int? productCount;
   final String status;
 
   Deal({
@@ -16,7 +16,7 @@ class Deal {
     this.askedPrice,
     this.finalPrice,
     this.deliverables,
-    this.postCount,
+    this.productCount,
     required this.status,
   });
 
@@ -28,7 +28,7 @@ class Deal {
       "asked_price": askedPrice,
       "final_price": finalPrice,
       "deliverables": deliverables,
-      "post_count": postCount,
+      "product_count": productCount,
       "status": status
     };
   }
@@ -41,7 +41,7 @@ class Deal {
       askedPrice: map["asked_price"],
       finalPrice: map["final_price"],
       deliverables: map["deliverables"],
-      postCount: map["post_count"],
+      productCount: map["product_count"],
       status: map["status"],
     );
   }

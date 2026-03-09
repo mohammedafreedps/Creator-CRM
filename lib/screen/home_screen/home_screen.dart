@@ -83,7 +83,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: context. spacing.s5),
                 Row(
                   children: [
                     FilterChip(

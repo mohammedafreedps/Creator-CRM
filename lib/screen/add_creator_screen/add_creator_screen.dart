@@ -1,4 +1,5 @@
 import 'package:afui/afui.dart';
+import 'package:creator_tracker/models/creator_draft_model.dart';
 import 'package:creator_tracker/widgets/app_datefield.dart';
 import 'package:creator_tracker/widgets/app_dropdown.dart';
 import 'package:creator_tracker/widgets/app_textfield.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 
 class AddCreatorScreen extends StatefulWidget {
   final int selectedStep;
+
   const AddCreatorScreen({super.key, this.selectedStep = 1});
 
   @override
@@ -13,60 +15,132 @@ class AddCreatorScreen extends StatefulWidget {
 }
 
 class _AddCreatorScreenState extends State<AddCreatorScreen> {
+
+  final CreatorDraft draft = CreatorDraft();
+
+  late PageController pageController;
+
   int selectedStep = 1;
 
   @override
   void initState() {
     super.initState();
     selectedStep = widget.selectedStep;
+    pageController = PageController(initialPage: selectedStep - 1);
   }
+
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
+  }
+
+  void goToStep(int step) {
+    setState(() {
+      selectedStep = step;
+    });
+
+    pageController.animateToPage(
+      step - 1,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.ease,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsetsGeometry.symmetric(
-            horizontal: context.spacing.s5,
+          padding: EdgeInsets.symmetric(
+            horizontal: context.spacing.s2,
             vertical: context.spacing.s2,
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.arrow_back),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+          child: Column(
+            children: [
+
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(7, (index) {
+
+                  final step = index + 1;
+
+                  return ChoiceChip(
+                    label: Text('$step'),
+                    selected: selectedStep == step,
+                    showCheckmark: false,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50),
                     ),
+                    onSelected: (_) {
+                      goToStep(step);
+                    },
+                  );
+                }),
+              ),
+
+              SizedBox(height: context.spacing.s5),
+
+              Text(stepTitle(selectedStep)),
+
+              SizedBox(height: context.spacing.s6),
+
+              Expanded(
+                child: PageView(
+                  controller: pageController,
+                  onPageChanged: (index) {
+                    setState(() {
+                      selectedStep = index + 1;
+                    });
+                  },
+                  children: [
+                
+                    Padding(
+                      padding: EdgeInsetsGeometry.symmetric(horizontal: context.spacing.s4),
+                      child: CreatorForm(draft: draft),
+                    ),
+                    Padding(
+                      padding: EdgeInsetsGeometry.symmetric(horizontal: context.spacing.s4),
+                      child: OutReach(draft: draft),
+                    ),
+                    Padding(
+                      padding: EdgeInsetsGeometry.symmetric(horizontal: context.spacing.s4),
+                      child: Deals(draft: draft),
+                    ),
+                    Padding(
+                      padding: EdgeInsetsGeometry.symmetric(horizontal: context.spacing.s4),
+                      child: ProductTracking(draft: draft),
+                    ),
+                    Padding(
+                      padding: EdgeInsetsGeometry.symmetric(horizontal: context.spacing.s4),
+                      child: Content(draft: draft),
+                    ),
+                    Padding(
+                      padding: EdgeInsetsGeometry.symmetric(horizontal: context.spacing.s4),
+                      child: Payment(draft: draft),
+                    ),
+                    Padding(
+                      padding: EdgeInsetsGeometry.symmetric(horizontal: context.spacing.s4),
+                      child: Notes(draft: draft),
+                    ),
+                
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(7, (index) {
-                    final step = index + 1;
-                    return ChoiceChip(
-                      label: Text('$step'),
-                      selected: selectedStep == step,
-                      showCheckmark: false,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50), // rounded
-                      ),
-                      onSelected: (_) {
-                        setState(() {
-                          selectedStep = step;
-                        });
-                      },
-                    );
-                  }),
-                ),
-                SizedBox(height: context.spacing.s5,),
-                currentProcessTitle(selectedStep),
-                SizedBox(height: context.spacing.s6,),
-                currentForm(selectedStep),
-              ],
-            ),
+              ),
+
+            ],
           ),
         ),
       ),
@@ -74,200 +148,416 @@ class _AddCreatorScreenState extends State<AddCreatorScreen> {
   }
 }
 
-Widget currentProcessTitle(int selectedStep) {
-  switch (selectedStep) {
-    case 1:
-      return Center( child: Text("Creator"));
-    case 2:
-      return Center(child: Text("Outreach"));
-    case 3:
-      return Center(child: Text("Deals"));
-    case 4:
-      return Center(child: Text("Product Tracking"));
-    case 5: 
-      return Center(child: Text("Content"));
-    case 6: 
-      return Center(child: Text("Payments"));
-    case 7: 
-      return Center(child: Text("Notes"));
-    default:
-      return Center(child: Text('---'));
-  }
-}
+String stepTitle(int step) {
 
-Widget currentForm(int selectedStep){
-  switch(selectedStep){
+  switch (step) {
     case 1:
-      return CreatorForm();
+      return "Creator";
     case 2:
-      return OutReach();
+      return "Outreach";
     case 3:
-      return Deals();
+      return "Deals";
     case 4:
-      return ProductTracking();
-    case 5: 
-      return Content();
-    case 6: 
-      return Payment();
-    case 7: 
-      return Notes();
+      return "Product Tracking";
+    case 5:
+      return "Content";
+    case 6:
+      return "Payments";
+    case 7:
+      return "Notes";
     default:
-      return Column(
-        children: [
-
-        ],
-      );
+      return "";
   }
 }
 
 class CreatorForm extends StatelessWidget {
-  const CreatorForm({super.key});
+
+  final CreatorDraft draft;
+
+  const CreatorForm({super.key, required this.draft});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children:[
-        AppTextField(hintText: 'Name'),
-        AppTextField(hintText: 'Followers'),
-        AppTextField(hintText: 'phone number'),
-        AppTextField(hintText: 'email'),
-        AppTextField(hintText: 'address'),
-        AppTextField(hintText: 'location'),
-        AppDropdown(hintText: 'Platform', items: [
-          DropdownMenuItem(value: 'instagram', child: Text('Instagram'),),
-          DropdownMenuItem(value: 'facebook', child: Text('Facebook')),
-          DropdownMenuItem(value: 'youtube', child: Text('Youtube')),
-        ], onChanged: (value){}),
-        AppDropdown(hintText: 'Niche', items: [
-          DropdownMenuItem(value: 'instagram', child: Text('Instagram'),),
-          DropdownMenuItem(value: 'facebook', child: Text('Facebook')),
-          DropdownMenuItem(value: 'youtube', child: Text('Youtube')),
-        ], onChanged: (value){}),
-        AppDropdown(hintText: 'Engagement Rate', items: [
-          DropdownMenuItem(value: 'low', child: Text('Low'),),
-          DropdownMenuItem(value: 'mid', child: Text('Mid')),
-          DropdownMenuItem(value: 'high', child: Text('High')),
-        ], onChanged: (value){})
-      ]
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+
+          AppTextField(
+            hintText: 'Name',
+            onChanged: (v) => draft.name = v,
+          ),
+
+          AppTextField(
+            hintText: 'Followers',
+            onChanged: (v) => draft.followers = int.tryParse(v),
+          ),
+
+          AppTextField(
+            hintText: 'phone number',
+            onChanged: (v) => draft.phone = v,
+          ),
+
+          AppTextField(
+            hintText: 'email',
+            onChanged: (v) => draft.email = v,
+          ),
+
+          AppTextField(
+            hintText: 'address',
+            onChanged: (v) => draft.address = v,
+          ),
+
+          AppTextField(
+            hintText: 'location',
+            onChanged: (v) => draft.location = v,
+          ),
+
+          AppDropdown(
+            hintText: 'Platform',
+            items: const [
+              DropdownMenuItem(value: 'instagram', child: Text('Instagram')),
+              DropdownMenuItem(value: 'facebook', child: Text('Facebook')),
+              DropdownMenuItem(value: 'youtube', child: Text('Youtube')),
+            ],
+            onChanged: (value) {
+              draft.platform = value;
+            },
+          ),
+
+          AppDropdown(
+            hintText: 'Niche',
+            items: const [
+              DropdownMenuItem(value: 'food', child: Text('Food')),
+              DropdownMenuItem(value: 'tech', child: Text('Tech')),
+              DropdownMenuItem(value: 'lifestyle', child: Text('Lifestyle')),
+            ],
+            onChanged: (value) {
+              draft.niche = value;
+            },
+          ),
+
+          AppDropdown(
+            hintText: 'Engagement Rate',
+            items: const [
+              DropdownMenuItem(value: 'low', child: Text('Low')),
+              DropdownMenuItem(value: 'mid', child: Text('Mid')),
+              DropdownMenuItem(value: 'high', child: Text('High')),
+            ],
+            onChanged: (value) {
+              draft.engagementRate = value;
+            },
+          ),
+
+        ],
+      ),
     );
   }
 }
 
 class OutReach extends StatelessWidget {
-  const OutReach({super.key});
+
+  final CreatorDraft draft;
+
+  const OutReach({super.key, required this.draft});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        AppDropdown(hintText: 'Status', items: [
-          DropdownMenuItem(value: 'message sent',child: Text('message sent')),
-          DropdownMenuItem(value: 'Replied',child: Text('Replied')),
-        ], onChanged: (value){}),
-        AppDateField(hintText: 'First Message Date', onChanged: (value){}),
-        AppDateField(hintText: 'Last Message Date', onChanged: (value){}),
-        AppDateField(hintText: 'Next Folloup Date', onChanged: (value){}),
-        AppDropdown(hintText: 'Communication Channel', items: [
-          DropdownMenuItem(value: 'instagram',child: Text('Instagram')),
-          DropdownMenuItem(value: 'whatsapp',child: Text('Whatsapp')),
-        ], onChanged: (value){}),
 
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+
+          AppDropdown(
+            hintText: 'Status',
+            items: const [
+              DropdownMenuItem(value: 'message sent', child: Text('Message Sent')),
+              DropdownMenuItem(value: 'replied', child: Text('Replied')),
+            ],
+            onChanged: (value) {
+              draft.outreachStatus = value;
+            },
+          ),
+
+          AppDateField(
+            hintText: 'First Message Date',
+            onChanged: (v) => draft.firstMessageDate = v,
+          ),
+
+          AppDateField(
+            hintText: 'Last Message Date',
+            onChanged: (v) => draft.lastFollowupDate = v,
+          ),
+
+          AppDateField(
+            hintText: 'Next Followup Date',
+            onChanged: (v) => draft.nextFollowupDate = v,
+          ),
+
+          AppDropdown(
+            hintText: 'Communication Channel',
+            items: const [
+              DropdownMenuItem(value: 'instagram', child: Text('Instagram')),
+              DropdownMenuItem(value: 'whatsapp', child: Text('Whatsapp')),
+            ],
+            onChanged: (value) {
+              draft.communicationChannel = value;
+            },
+          ),
+
+        ],
+      ),
     );
   }
 }
 
 class Deals extends StatelessWidget {
-  const Deals({super.key});
+
+  final CreatorDraft draft;
+
+  const Deals({super.key, required this.draft});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        AppTextField(hintText: 'Asked Price'),
-        AppTextField(hintText: 'Final Price'),
-        AppTextField(hintText: 'Deliverables'),
-        AppTextField(hintText: 'Product Names (end with , )'),
-        AppDropdown(hintText: 'Collaboration Type', items: [
-          DropdownMenuItem(value: 'barter', child: Text('Barter')),
-          DropdownMenuItem(value: 'paid', child: Text('Paid + Product'))
-        ], onChanged: (value){})
-      ],
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+
+          AppTextField(
+            hintText: 'Asked Price',
+            onChanged: (v) => draft.askedPrice = double.tryParse(v),
+          ),
+
+          AppTextField(
+            hintText: 'Final Price',
+            onChanged: (v) => draft.finalPrice = double.tryParse(v),
+          ),
+
+          AppTextField(
+            hintText: 'Deliverables',
+            onChanged: (v) => draft.deliverables = v,
+          ),
+
+          AppTextField(
+            hintText: 'Product Names (comma separated)',
+            onChanged: (v) => draft.productName = v,
+          ),
+
+          AppDropdown(
+            hintText: 'Collaboration Type',
+            items: const [
+              DropdownMenuItem(value: 'barter', child: Text('Barter')),
+              DropdownMenuItem(value: 'paid', child: Text('Paid + Product')),
+            ],
+            onChanged: (value) {
+              draft.collaborationType = value;
+            },
+          ),
+
+        ],
+      ),
     );
   }
 }
 
 class ProductTracking extends StatelessWidget {
-  const ProductTracking({super.key});
+
+  final CreatorDraft draft;
+
+  const ProductTracking({super.key, required this.draft});
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      AppTextField(hintText: 'Product Name'),
-      AppTextField(hintText: 'Status'),
-      AppTextField(hintText: 'Tracking Number'),
-      AppDropdown(hintText: 'Courier', items: [], onChanged: (value){}),
-      AppDateField(hintText: 'Dispatch Date', onChanged: (value){}),
-      AppDateField(hintText: 'Delivery Date', onChanged: (value){}),
-    ],);
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+
+          AppTextField(
+            hintText: 'Product Name',
+            onChanged: (v) => draft.productName = v,
+          ),
+
+          AppTextField(
+            hintText: 'Status',
+            onChanged: (v) => draft.productStatus = v,
+          ),
+
+          AppTextField(
+            hintText: 'Tracking Number',
+            onChanged: (v) => draft.trackingNumber = v,
+          ),
+
+          AppDropdown(
+            hintText: 'Courier',
+            items: const [
+              DropdownMenuItem(value: 'dtdc', child: Text('DTDC')),
+              DropdownMenuItem(value: 'delhivery', child: Text('Delhivery')),
+            ],
+            onChanged: (value) {
+              draft.courier = value;
+            },
+          ),
+
+          AppDateField(
+            hintText: 'Dispatch Date',
+            onChanged: (v) => draft.dispatchDate = v,
+          ),
+
+          AppDateField(
+            hintText: 'Delivery Date',
+            onChanged: (v) => draft.deliveryDate = v,
+          ),
+
+        ],
+      ),
+    );
   }
 }
 
 class Content extends StatelessWidget {
-  const Content({super.key});
+
+  final CreatorDraft draft;
+
+  const Content({super.key, required this.draft});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        AppDropdown(hintText: 'Content Received', items: [
-          DropdownMenuItem(value: true, child: Text('Yes'),),
-          DropdownMenuItem(value: false, child: Text('No')),
-        ], onChanged: (value){}),
-        
-        AppDropdown(hintText: 'Content Approved', items: [
-          DropdownMenuItem(value: true, child: Text('Yes'),),
-          DropdownMenuItem(value: false, child: Text('No')),
-        ], onChanged: (value){}),
 
-        AppDropdown(hintText: 'Ad Permission', items: [
-          DropdownMenuItem(value: true, child: Text('Yes'),),
-          DropdownMenuItem(value: false, child: Text('No')),
-        ], onChanged: (value){}),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
 
-        AppDateField(hintText: 'Posting Date', onChanged: (value){})
-      ],
+          AppDropdown(
+            hintText: 'Content Received',
+            items: const [
+              DropdownMenuItem(value: true, child: Text('Yes')),
+              DropdownMenuItem(value: false, child: Text('No')),
+            ],
+            onChanged: (value) {
+              draft.contentReceived = value;
+            },
+          ),
+
+          AppDropdown(
+            hintText: 'Content Approved',
+            items: const [
+              DropdownMenuItem(value: true, child: Text('Yes')),
+              DropdownMenuItem(value: false, child: Text('No')),
+            ],
+            onChanged: (value) {
+              draft.contentApproved = value;
+            },
+          ),
+
+          AppDropdown(
+            hintText: 'Ad Permission',
+            items: const [
+              DropdownMenuItem(value: true, child: Text('Yes')),
+              DropdownMenuItem(value: false, child: Text('No')),
+            ],
+            onChanged: (value) {
+              draft.adPermission = value;
+            },
+          ),
+
+          AppDateField(
+            hintText: 'Posting Date',
+            onChanged: (v) => draft.postingDate = v,
+          ),
+
+        ],
+      ),
     );
   }
 }
 
 class Payment extends StatelessWidget {
-  const Payment({super.key});
+
+  final CreatorDraft draft;
+
+  const Payment({super.key, required this.draft});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        AppTextField(hintText: 'Amount Paid'),
-        AppTextField(hintText: 'Invoice Number'),
-        AppDropdown(hintText: 'Status', items: [], onChanged: (value){}),
-        AppDropdown(hintText: 'Payment Method', items: [], onChanged: (value){}),
-        AppDateField(hintText: 'Payment Date', onChanged: (value){}),
-      ],
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+
+          AppTextField(
+            hintText: 'Amount Paid',
+            onChanged: (v) => draft.amount = double.tryParse(v),
+          ),
+
+          AppTextField(
+            hintText: 'Invoice Number',
+            onChanged: (v) => draft.invoiceNumber = v,
+          ),
+
+          AppDropdown(
+            hintText: 'Status',
+            items: const [
+              DropdownMenuItem(value: 'paid', child: Text('Paid')),
+              DropdownMenuItem(value: 'pending', child: Text('Pending')),
+            ],
+            onChanged: (value) {
+              draft.paymentStatus = value;
+            },
+          ),
+
+          AppDropdown(
+            hintText: 'Payment Method',
+            items: const [
+              DropdownMenuItem(value: 'upi', child: Text('UPI')),
+              DropdownMenuItem(value: 'bank', child: Text('Bank Transfer')),
+            ],
+            onChanged: (value) {
+              draft.paymentMethod = value;
+            },
+          ),
+
+          AppDateField(
+            hintText: 'Payment Date',
+            onChanged: (v) => draft.paymentDate = v,
+          ),
+
+        ],
+      ),
     );
   }
 }
 
-
 class Notes extends StatelessWidget {
-  const Notes({super.key});
+
+  final CreatorDraft draft;
+
+  const Notes({super.key, required this.draft});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        AppTextField(hintText: 'Notes')
-      ],
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+
+          AppTextField(
+            hintText: 'Notes',
+            onChanged: (v) => draft.note = v,
+          ),
+
+          SizedBox(height: context.spacing.s6),
+
+          ElevatedButton(
+            onPressed: () {
+              print(draft.toMap());
+            },
+            child: const Text("Save"),
+          ),
+
+        ],
+      ),
     );
   }
 }

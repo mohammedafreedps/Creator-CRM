@@ -7,13 +7,7 @@ class Content {
   final String? postingDate;
   final String? contentLink;
   final bool adPermission;
-
-  final int? views;
-  final int? likes;
-  final int? comments;
-  final int? shares;
-  final int? saves;
-
+  
   Content({
     this.id,
     required this.creatorId,
@@ -22,11 +16,6 @@ class Content {
     this.postingDate,
     this.contentLink,
     this.adPermission = false,
-    this.views,
-    this.likes,
-    this.comments,
-    this.shares,
-    this.saves,
   });
 
   Map<String, dynamic> toMap() {
@@ -38,11 +27,6 @@ class Content {
       "posting_date": postingDate,
       "content_link": contentLink,
       "ad_permission": adPermission ? 1 : 0,
-      "views": views,
-      "likes": likes,
-      "comments": comments,
-      "shares": shares,
-      "saves": saves
     };
   }
 
@@ -55,11 +39,6 @@ class Content {
       postingDate: map["posting_date"],
       contentLink: map["content_link"],
       adPermission: map["ad_permission"] == 1,
-      views: map["views"],
-      likes: map["likes"],
-      comments: map["comments"],
-      shares: map["shares"],
-      saves: map["saves"],
     );
   }
 }

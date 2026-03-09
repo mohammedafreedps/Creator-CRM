@@ -6,12 +6,14 @@ class AppTextField extends StatelessWidget {
   final TextEditingController? controller;
   final String hintText;
   final IconData? prefixIcon;
+  final ValueChanged<String>? onChanged;
   const AppTextField({
     super.key,
     this.focusNode,
     this.controller,
     required this.hintText,
     this.prefixIcon,
+    this.onChanged,
   });
 
   @override
@@ -26,6 +28,7 @@ class AppTextField extends StatelessWidget {
       child: TextField(
         focusNode: focusNode,
         controller: controller,
+        onChanged: onChanged,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.symmetric(
             horizontal: prefixIcon != null

@@ -1,4 +1,4 @@
-import 'package:creator_tracker/service/database_service.dart';
+import 'package:creator_tracker/database/database_service.dart';
 import 'package:sqflite/sqflite.dart';
 import '../models/creator_model.dart';
 
