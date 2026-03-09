@@ -32,15 +32,13 @@ class AppDropdown<T> extends StatelessWidget {
         initialValue: value,
         items: items,
         onChanged: onChanged,
+        borderRadius: BorderRadius.circular(context.radius.md),
         decoration: InputDecoration(
           hintText: hintText,
           border: InputBorder.none,
           prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
           suffixIcon: value != null
-              ? IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: onClear,
-                )
+              ? IconButton(icon: const Icon(Icons.close), onPressed: onClear)
               : null,
           contentPadding: EdgeInsets.symmetric(
             horizontal: context.spacing.s2,

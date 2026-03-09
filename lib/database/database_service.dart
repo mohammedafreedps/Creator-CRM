@@ -34,7 +34,7 @@ class DatabaseService {
       name TEXT,
       platform TEXT,
       niche TEXT,
-      followers INTEGER,
+      followers TEXT,
       engagement_rate TEXT,
       phone TEXT,
       email TEXT,

@@ -8,3 +8,21 @@ sealed class ShowAllCreatorState extends Equatable {
 }
 
 final class ShowAllCreatorInitial extends ShowAllCreatorState {}
+
+final class CreatorListLoading extends ShowAllCreatorState {}
+
+class CreatorListLoaded extends ShowAllCreatorState {
+
+  final List<CreatorWithOutreach> creators;
+
+  CreatorListLoaded(this.creators);
+
+}
+
+class CreatorListEmpty extends ShowAllCreatorState {}
+
+final class CreatorListError extends ShowAllCreatorState {
+  final String message;
+
+  const CreatorListError(this.message);
+}

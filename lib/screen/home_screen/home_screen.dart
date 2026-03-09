@@ -1,8 +1,12 @@
 import 'package:afui/afui.dart';
 import 'package:creator_tracker/screen/add_creator_screen/add_creator_screen.dart';
+import 'package:creator_tracker/screen/home_screen/cubit/cubit/show_all_creator_cubit.dart';
+import 'package:creator_tracker/utils/format_date.dart';
+import 'package:creator_tracker/widgets/app_snackbar.dart';
 import 'package:creator_tracker/widgets/app_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -70,11 +74,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     IconButton(onPressed: () {}, icon: Icon(Icons.settings)),
                   ],
                 ),
-                SizedBox(height: context. spacing.s4),
+                SizedBox(height: context.spacing.s4),
                 Column(
                   children: [
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: context. spacing.s14),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: context.spacing.s14,
+                      ),
                       child: AppTextField(
                         hintText: 'Search Creator',
                         focusNode: _searchFocusNode,
@@ -90,54 +96,87 @@ class _HomeScreenState extends State<HomeScreen> {
                       showCheckmark: false,
                       side: BorderSide.none,
                       padding: EdgeInsets.symmetric(
-                        horizontal: context. spacing.s2,
-                        vertical: context. spacing.s1,
+                        horizontal: context.spacing.s2,
+                        vertical: context.spacing.s1,
                       ),
                       label: Text('data dsfsadfadf'),
-                      onSelected: (value) {},
+                      onSelected: (value) {
+                        
+                      },
                     ),
                   ],
                 ),
-                SizedBox(height: context. spacing.s3),
-                Expanded(
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    itemCount: 50,
-                    itemBuilder: (context, index) => GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        margin: EdgeInsets.only(bottom: context. spacing.s5),
-                        padding: EdgeInsets.all(context. spacing.s5),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: context. colors.surface,
-                          borderRadius: BorderRadius.circular(context. radius.md),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'mohd.afreed_',
-                              style: Theme.of(context).textTheme.titleLarge
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            Row(
-                              children: [
-                                Text(
-                                  '@instagram . Tech . 500k',
-                                  style: Theme.of(context).textTheme.bodySmall,
+                SizedBox(height: context.spacing.s3),
+                BlocConsumer<ShowAllCreatorCubit, ShowAllCreatorState>(
+                  listener: (context, state) {
+                    if (state is CreatorListError) {
+                      appTopSnackBar(context, state.message);
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is CreatorListEmpty) {
+                      return Expanded(child: Text('data is Empty'));
+                    }
+                    if (state is CreatorListLoading) {
+                      return Expanded(
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+                    if (state is CreatorListLoaded) {
+                      return Expanded(
+                        child: ListView.builder(
+                          controller: _scrollController,
+                          itemCount: state.creators.length,
+                          itemBuilder: (context, index) => GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                bottom: context.spacing.s5,
+                              ),
+                              padding: EdgeInsets.all(context.spacing.s5),
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: context.colors.surface,
+                                borderRadius: BorderRadius.circular(
+                                  context.radius.md,
                                 ),
-                              ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    state.creators[index].creator.name,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        '@${state.creators[index].creator.platform} . ${state.creators[index].creator.niche} . ${state.creators[index].creator.followers}',
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodySmall,
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: context.af.spacing.s3,),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(formatDate(state.creators[index].outreach?.firstMessageDate,),style: Theme.of(context).textTheme.bodySmall,),
+                                      Text(state.creators[index].outreach?.status ?? 'No Outreach')],
+                                  ),
+                                ],
+                              ),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [Text('Replied')],
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
+                      );
+                    }
+                    return Text('data');
+                  },
                 ),
               ],
             ),

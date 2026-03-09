@@ -1,3 +1,4 @@
+import 'package:creator_tracker/screen/add_creator_screen/cubit/cubit/add_creator_cubit.dart';
 import 'package:creator_tracker/screen/home_screen/cubit/cubit/show_all_creator_cubit.dart';
 import 'package:creator_tracker/screen/home_screen/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_)=> ShowAllCreatorCubit()),
+        BlocProvider(create: (_)=> ShowAllCreatorCubit()..loadCreators()),
+        BlocProvider(create: (_)=> AddCreatorCubit()),
         
       ],
       child: MaterialApp(

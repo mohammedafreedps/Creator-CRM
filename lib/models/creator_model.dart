@@ -1,10 +1,10 @@
 class Creator {
   final int? id;
   final String name;
-  final String platform;
-  final String niche;
-  final int followers;
-  final String engagementRate;
+  final String? platform;
+  final String? niche;
+  final String? followers;
+  final String? engagementRate;
   final String? phone;
   final String? email;
   final String? address;
@@ -17,10 +17,10 @@ class Creator {
   Creator({
     this.id,
     required this.name,
-    required this.platform,
-    required this.niche,
-    required this.followers,
-    required this.engagementRate,
+    this.platform,
+    this.niche,
+    this.followers,
+    this.engagementRate,
     this.phone,
     this.email,
     this.address,
@@ -35,15 +35,15 @@ class Creator {
     return {
       "id": id,
       "name": name,
-      "platform": platform,
-      "niche": niche,
-      "followers": followers,
-      "engagement_rate": engagementRate,
-      "phone": phone,
-      "email": email,
-      "address": address,
-      "location": location,
-      "rating": rating,
+      "platform": platform ?? '',
+      "niche": niche ?? '',
+      "followers": followers ?? '',
+      "engagement_rate": engagementRate ?? '',
+      "phone": phone ?? '',
+      "email": email ?? '',
+      "address": address ?? '',
+      "location": location ?? '',
+      "rating": rating ?? '',
       "is_favorite": isFavorite ? 1 : 0,
       "is_blacklisted": isBlacklisted ? 1 : 0,
       "created_at": createdAt

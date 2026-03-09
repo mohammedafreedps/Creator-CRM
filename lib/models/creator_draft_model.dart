@@ -6,7 +6,7 @@ class CreatorDraft {
   String? name;
   String? platform;
   String? niche;
-  int? followers;
+  String? followers;
   String? engagementRate;
   String? phone;
   String? email;

@@ -2,7 +2,7 @@ class Outreach {
 
   final int? id;
   final int creatorId;
-  final String status;
+  final String? status;
   final String? firstMessageDate;
   final String? lastFollowupDate;
   final String? nextFollowupDate;
@@ -12,7 +12,7 @@ class Outreach {
   Outreach({
     this.id,
     required this.creatorId,
-    required this.status,
+    this.status,
     this.firstMessageDate,
     this.lastFollowupDate,
     this.nextFollowupDate,
@@ -37,12 +37,12 @@ class Outreach {
     return Outreach(
       id: map["id"],
       creatorId: map["creator_id"],
-      status: map["status"],
-      firstMessageDate: map["first_message_date"],
-      lastFollowupDate: map["last_followup_date"],
-      nextFollowupDate: map["next_followup_date"],
-      communicationChannel: map["communication_channel"],
-      followupCount: map["followup_count"],
+      status: map["status"] ?? '',
+      firstMessageDate: map["first_message_date"] ?? '',
+      lastFollowupDate: map["last_followup_date"] ?? '',
+      nextFollowupDate: map["next_followup_date"] ?? '',
+      communicationChannel: map["communication_channel"] ?? '',
+      followupCount: map["followup_count"] ?? 0,
     );
   }
 }
