@@ -1,7 +1,9 @@
 import 'package:afui/afui.dart';
 import 'package:creator_tracker/models/creator_draft_model.dart';
 import 'package:creator_tracker/screen/add_creator_screen/cubit/cubit/add_creator_cubit.dart';
+import 'package:creator_tracker/screen/creator_details_screen/cubit/cubit/creator_details_cubit.dart';
 import 'package:creator_tracker/screen/home_screen/cubit/cubit/show_all_creator_cubit.dart';
+import 'package:creator_tracker/utils/iso_string_to_datetime.dart';
 import 'package:creator_tracker/widgets/app_datefield.dart';
 import 'package:creator_tracker/widgets/app_dropdown.dart';
 import 'package:creator_tracker/widgets/app_snackbar.dart';
@@ -11,25 +13,89 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddCreatorScreen extends StatefulWidget {
   final int selectedStep;
-
-  const AddCreatorScreen({super.key, this.selectedStep = 1});
+  final int? creatorId;
+  final CreatorFullDetail? creatorFullDetail;
+  const AddCreatorScreen({
+    super.key,
+    this.selectedStep = 1,
+    this.creatorId,
+    this.creatorFullDetail,
+  });
 
   @override
   State<AddCreatorScreen> createState() => _AddCreatorScreenState();
 }
 
 class _AddCreatorScreenState extends State<AddCreatorScreen> {
-  final CreatorDraft draft = CreatorDraft();
+  CreatorDraft draft = CreatorDraft();
 
   late PageController pageController;
 
   int selectedStep = 1;
 
+  CreatorFullDetail? fullDetail;
+
   @override
   void initState() {
     super.initState();
+
     selectedStep = widget.selectedStep;
     pageController = PageController(initialPage: selectedStep - 1);
+    fullDetail = widget.creatorFullDetail;
+    draft.id = widget.creatorId;
+    //-------------------------------------------------------------
+    draft.name = fullDetail?.creator.name;
+    draft.followers = fullDetail?.creator.followers;
+    draft.phone = fullDetail?.creator.phone;
+    draft.email = fullDetail?.creator.email;
+    draft.address = fullDetail?.creator.address;
+    draft.location = fullDetail?.creator.location;
+    draft.platform = fullDetail?.creator.platform;
+    draft.niche = fullDetail?.creator.niche;
+    draft.engagementRate = fullDetail?.creator.engagementRate;
+    //--------------------------------------------------------------
+    draft.outreachStatus = fullDetail?.outreach?.status;
+    draft.firstMessageDate = isoStringToDateTime(
+      fullDetail?.outreach?.firstMessageDate,
+    );
+    draft.lastFollowupDate = isoStringToDateTime(
+      fullDetail?.outreach?.lastFollowupDate,
+    );
+    draft.nextFollowupDate = isoStringToDateTime(
+      fullDetail?.outreach?.nextFollowupDate,
+    );
+    draft.communicationChannel = fullDetail?.outreach?.communicationChannel;
+    //--------------------------------------------------------------
+    draft.collaborationType = fullDetail?.deal?.collaborationType;
+    draft.askedPrice = fullDetail?.deal?.askedPrice;
+    draft.finalPrice = fullDetail?.deal?.finalPrice;
+    draft.deliverables = fullDetail?.deal?.deliverables;
+    draft.dealStatus = fullDetail?.deal?.status;
+
+    //--------------------------------------------------------------
+    draft.productName = fullDetail?.product?.productName;
+    draft.productStatus = fullDetail?.product?.status;
+    draft.courier = fullDetail?.product?.courier;
+    draft.trackingNumber = fullDetail?.product?.trackingNumber;
+    draft.dispatchDate = isoStringToDateTime(fullDetail?.product?.dispatchDate);
+    draft.deliveryDate = isoStringToDateTime(fullDetail?.product?.deliveryDate);
+
+    //--------------------------------------------------------------
+    draft.contentReceived = fullDetail?.content?.contentReceived;
+    draft.contentApproved = fullDetail?.content?.contentApproved;
+    draft.postingDate = isoStringToDateTime(fullDetail?.content?.postingDate);
+    draft.contentLink = fullDetail?.content?.contentLink;
+    draft.adPermission = fullDetail?.content?.adPermission;
+
+    //--------------------------------------------------------------
+    draft.amount = fullDetail?.payment?.amount;
+    draft.paymentStatus = fullDetail?.payment?.status;
+    draft.paymentDate = isoStringToDateTime(fullDetail?.payment?.paymentDate);
+    draft.paymentMethod = fullDetail?.payment?.paymentMethod;
+    draft.invoiceNumber = fullDetail?.payment?.invoiceNumber;
+
+    //--------------------------------------------------------------
+    draft.note = fullDetail?.note?.note;
   }
 
   @override
@@ -75,6 +141,15 @@ class _AddCreatorScreenState extends State<AddCreatorScreen> {
                       if (state is CreatorSaveError) {
                         appTopSnackBar(context, state.message);
                       }
+                      if(state is CreatorUpdatedSuccess){
+                        appTopSnackBar(
+                          context,
+                          'Creator update successfully',
+                          color: context.af.colors.successContainer,
+                        );
+                        context.read<ShowAllCreatorCubit>().refreshCreators();
+                        Navigator.pop(context);
+                      }
                       if (state is CreatorSaveSuccess) {
                         appTopSnackBar(
                           context,
@@ -99,7 +174,14 @@ class _AddCreatorScreenState extends State<AddCreatorScreen> {
                             appTopSnackBar(context, '* Fields are required');
                             return;
                           }
-                          context.read<AddCreatorCubit>().saveCreator(draft);
+
+                          if (widget.creatorId == null) {
+                            context.read<AddCreatorCubit>().saveCreator(draft);
+                          } else {
+                            context.read<AddCreatorCubit>().updateCreator(
+                              draft,
+                            );
+                          }
                         },
                         child: const Text("Save"),
                       );
@@ -226,31 +308,44 @@ class CreatorForm extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          AppTextField(hintText: 'Name', onChanged: (v) => draft.name = v),
+          AppTextField(
+            initialValue: draft.name,
+            hintText: 'Name',
+            onChanged: (v) => draft.name = v,
+          ),
 
           AppTextField(
+            initialValue: draft.followers,
             hintText: 'Followers',
             onChanged: (v) => draft.followers = v,
           ),
 
           AppTextField(
+            initialValue: draft.phone,
             hintText: 'phone number',
             onChanged: (v) => draft.phone = v,
           ),
 
-          AppTextField(hintText: 'email', onChanged: (v) => draft.email = v),
+          AppTextField(
+            initialValue: draft.email,
+            hintText: 'email',
+            onChanged: (v) => draft.email = v,
+          ),
 
           AppTextField(
+            initialValue: draft.address,
             hintText: 'address',
             onChanged: (v) => draft.address = v,
           ),
 
           AppTextField(
+            initialValue: draft.location,
             hintText: 'location',
             onChanged: (v) => draft.location = v,
           ),
 
           AppDropdown(
+            value: draft.platform,
             hintText: 'Platform',
             items: const [
               DropdownMenuItem(value: 'instagram', child: Text('Instagram')),
@@ -263,6 +358,7 @@ class CreatorForm extends StatelessWidget {
           ),
 
           AppDropdown(
+            value: draft.niche,
             hintText: 'Niche',
             items: const [
               DropdownMenuItem(value: "food", child: Text("Food")),
@@ -291,6 +387,7 @@ class CreatorForm extends StatelessWidget {
           ),
 
           AppDropdown(
+            value: draft.engagementRate,
             hintText: 'Engagement Rate',
             items: const [
               DropdownMenuItem(value: 'low', child: Text('Low')),
@@ -318,6 +415,7 @@ class OutReach extends StatelessWidget {
       child: Column(
         children: [
           AppDropdown(
+            value: draft.outreachStatus,
             hintText: 'Status',
             items: const [
               DropdownMenuItem(
@@ -346,21 +444,25 @@ class OutReach extends StatelessWidget {
           ),
 
           AppDateField(
+            value: draft.firstMessageDate,
             hintText: 'First Message Date',
             onChanged: (v) => draft.firstMessageDate = v,
           ),
 
           AppDateField(
+            value: draft.lastFollowupDate,
             hintText: 'Last Message Date',
             onChanged: (v) => draft.lastFollowupDate = v,
           ),
 
           AppDateField(
+            value: draft.nextFollowupDate,
             hintText: 'Next Followup Date',
             onChanged: (v) => draft.nextFollowupDate = v,
           ),
 
           AppDropdown(
+            value: draft.communicationChannel,
             hintText: 'Communication Channel',
             items: const [
               DropdownMenuItem(value: 'instagram', child: Text('Instagram')),
@@ -387,26 +489,31 @@ class Deals extends StatelessWidget {
       child: Column(
         children: [
           AppTextField(
+            initialValue: draft.askedPrice.toString(),
             hintText: 'Asked Price',
             onChanged: (v) => draft.askedPrice = double.tryParse(v),
           ),
 
           AppTextField(
+            initialValue: draft.finalPrice.toString(),
             hintText: 'Final Price',
             onChanged: (v) => draft.finalPrice = double.tryParse(v),
           ),
 
           AppTextField(
+            initialValue: draft.deliverables,
             hintText: 'Deliverables',
             onChanged: (v) => draft.deliverables = v,
           ),
 
           AppTextField(
+            initialValue: draft.productName,
             hintText: 'Product Names (comma separated)',
             onChanged: (v) => draft.productName = v,
           ),
 
           AppDropdown(
+            value: draft.collaborationType,
             hintText: 'Collaboration Type',
             items: const [
               DropdownMenuItem(value: 'barter', child: Text('Barter')),
@@ -433,13 +540,23 @@ class ProductTracking extends StatelessWidget {
       child: Column(
         children: [
           AppTextField(
+            initialValue: draft.productName,
             hintText: 'Product Name',
             onChanged: (v) => draft.productName = v,
           ),
 
-          AppTextField(
+          AppDropdown(
             hintText: 'Status',
-            onChanged: (v) => draft.productStatus = v,
+            items: [
+              DropdownMenuItem(value: 'Reported', child: Text('Reported')),
+              DropdownMenuItem(value: 'Dispatched', child: Text('Dispatched')),
+              DropdownMenuItem(value: 'Canceld', child: Text('Canceld')),
+              DropdownMenuItem(value: 'Delayed', child: Text('Delayed')),
+              DropdownMenuItem(value: 'Received', child: Text('Received')),
+            ],
+            onChanged: (value) {
+              draft.productStatus = value;
+            },
           ),
 
           AppTextField(
@@ -450,8 +567,9 @@ class ProductTracking extends StatelessWidget {
           AppDropdown(
             hintText: 'Courier',
             items: const [
-              DropdownMenuItem(value: 'dtdc', child: Text('DTDC')),
-              DropdownMenuItem(value: 'delhivery', child: Text('Delhivery')),
+              DropdownMenuItem(value: 'DTDC', child: Text('DTDC')),
+              DropdownMenuItem(value: 'Delhivery', child: Text('Delhivery')),
+              DropdownMenuItem(value: 'Porter', child: Text('Porter')),
             ],
             onChanged: (value) {
               draft.courier = value;
@@ -459,11 +577,13 @@ class ProductTracking extends StatelessWidget {
           ),
 
           AppDateField(
+            value: draft.dispatchDate,
             hintText: 'Dispatch Date',
             onChanged: (v) => draft.dispatchDate = v,
           ),
 
           AppDateField(
+            value: draft.deliveryDate,
             hintText: 'Delivery Date',
             onChanged: (v) => draft.deliveryDate = v,
           ),
@@ -484,6 +604,7 @@ class Content extends StatelessWidget {
       child: Column(
         children: [
           AppDropdown(
+            value: draft.contentReceived,
             hintText: 'Content Received',
             items: const [
               DropdownMenuItem(value: true, child: Text('Yes')),
@@ -495,6 +616,7 @@ class Content extends StatelessWidget {
           ),
 
           AppDropdown(
+            value: draft.contentApproved,
             hintText: 'Content Approved',
             items: const [
               DropdownMenuItem(value: true, child: Text('Yes')),
@@ -506,6 +628,7 @@ class Content extends StatelessWidget {
           ),
 
           AppDropdown(
+            value: draft.adPermission,
             hintText: 'Ad Permission',
             items: const [
               DropdownMenuItem(value: true, child: Text('Yes')),
@@ -517,6 +640,7 @@ class Content extends StatelessWidget {
           ),
 
           AppDateField(
+            value: draft.postingDate,
             hintText: 'Posting Date',
             onChanged: (v) => draft.postingDate = v,
           ),
@@ -537,16 +661,19 @@ class Payment extends StatelessWidget {
       child: Column(
         children: [
           AppTextField(
+            initialValue: draft.amount.toString(),
             hintText: 'Amount Paid',
             onChanged: (v) => draft.amount = double.tryParse(v),
           ),
 
           AppTextField(
+            initialValue: draft.invoiceNumber,
             hintText: 'Invoice Number',
             onChanged: (v) => draft.invoiceNumber = v,
           ),
 
           AppDropdown(
+            value: draft.paymentStatus,
             hintText: 'Status',
             items: const [
               DropdownMenuItem(value: 'paid', child: Text('Paid')),
@@ -558,6 +685,7 @@ class Payment extends StatelessWidget {
           ),
 
           AppDropdown(
+            value: draft.paymentMethod,
             hintText: 'Payment Method',
             items: const [
               DropdownMenuItem(value: 'upi', child: Text('UPI')),
@@ -569,6 +697,7 @@ class Payment extends StatelessWidget {
           ),
 
           AppDateField(
+            value: draft.paymentDate,
             hintText: 'Payment Date',
             onChanged: (v) => draft.paymentDate = v,
           ),
@@ -588,7 +717,7 @@ class Notes extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          AppTextField(hintText: 'Notes', onChanged: (v) => draft.note = v),
+          AppTextField(initialValue: draft.note, hintText: 'Notes', onChanged: (v) => draft.note = v),
         ],
       ),
     );

@@ -1,5 +1,8 @@
 import 'package:afui/afui.dart';
+import 'package:creator_tracker/screen/add_creator_screen/add_creator_screen.dart';
+import 'package:creator_tracker/screen/add_creator_screen/cubit/cubit/add_creator_cubit.dart';
 import 'package:creator_tracker/screen/creator_details_screen/cubit/cubit/creator_details_cubit.dart';
+import 'package:creator_tracker/screen/home_screen/cubit/cubit/show_all_creator_cubit.dart';
 import 'package:creator_tracker/utils/format_date.dart';
 import 'package:creator_tracker/widgets/app_filter_chip.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +10,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreatorDetailsScreen extends StatefulWidget {
   final int creatorId;
-
   const CreatorDetailsScreen({super.key, required this.creatorId});
 
   @override
@@ -15,7 +17,6 @@ class CreatorDetailsScreen extends StatefulWidget {
 }
 
 class _CreatorDetailsScreenState extends State<CreatorDetailsScreen> {
-
   final ScrollController chipScrollController = ScrollController();
 
   List<String> segment = [
@@ -31,6 +32,8 @@ class _CreatorDetailsScreenState extends State<CreatorDetailsScreen> {
   int selectedIndex = 0;
 
   double alignmentX = 0;
+
+  CreatorFullDetail? creatorFullDetail;
 
   @override
   void initState() {
@@ -71,7 +74,6 @@ class _CreatorDetailsScreenState extends State<CreatorDetailsScreen> {
   }
 
   void handleSwipe(DragEndDetails details) {
-
     if (details.primaryVelocity == null) return;
 
     if (details.primaryVelocity! < 0) {
@@ -89,126 +91,155 @@ class _CreatorDetailsScreenState extends State<CreatorDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocListener<AddCreatorCubit, AddCreatorState>(
+      listener: (context, state) {
+        if(state is CreatorUpdatedSuccess){
+          context.read<CreatorDetailsCubit>().loadCreatorDetail(widget.creatorId);
+          context.read<ShowAllCreatorCubit>().loadCreators();
+          
+        }
+      },
+      child: Scaffold(
+        body: GestureDetector(
+          onHorizontalDragEnd: handleSwipe,
+          child: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.spacing.s3,
+                vertical: context.spacing.s2,
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.arrow_back),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddCreatorScreen(
+                                creatorId: widget.creatorId,
+                                selectedStep: selectedIndex + 1,
+                                creatorFullDetail: creatorFullDetail,
+                              ),
+                            ),
+                          );
+                        },
+                        icon: Icon(Icons.edit),
+                      ),
+                    ],
+                  ),
 
-    return Scaffold(
-      body: GestureDetector(
-        onHorizontalDragEnd: handleSwipe,
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: context.spacing.s3,
-              vertical: context.spacing.s2,
-            ),
-            child: Column(
-              children: [
+                  /// CHIP ROW (always visible)
+                  SizedBox(
+                    height: 50,
+                    child: ListView.builder(
+                      controller: chipScrollController,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: segment.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: EdgeInsets.only(right: context.spacing.s1),
+                          child: AppFilterChip(
+                            label: segment[index],
+                            isSelected: selectedIndex == index,
+                            onSelected: (_) {
+                              setState(() {
+                                selectedIndex = index;
+                              });
 
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back),
+                              scrollToChip();
+                            },
+                          ),
+                        );
+                      },
                     ),
-                  ],
-                ),
+                  ),
 
-                /// CHIP ROW (always visible)
-                SizedBox(
-                  height: 50,
-                  child: ListView.builder(
-                    controller: chipScrollController,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: segment.length,
-                    itemBuilder: (context, index) {
+                  SizedBox(height: context.spacing.s4),
 
-                      return Padding(
-                        padding: EdgeInsets.only(right: context.spacing.s1),
-                        child: AppFilterChip(
-                          label: segment[index],
-                          isSelected: selectedIndex == index,
-                          onSelected: (_) {
-                            setState(() {
-                              selectedIndex = index;
-                            });
+                  /// CONTENT
+                  Expanded(
+                    child:
+                        BlocBuilder<CreatorDetailsCubit, CreatorDetailsState>(
+                          builder: (context, state) {
+                            if (state is CreatorDetailLoading) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
 
-                            scrollToChip();
+                            if (state is CreatorDetailError) {
+                              return Center(child: Text(state.message));
+                            }
+
+                            if (state is CreatorDetailLoaded) {
+                              print('rerenderd segment ui');
+                              creatorFullDetail = state.data;
+                              return SingleChildScrollView(
+                                child: _buildSegmentContent(state.data),
+                              );
+                            }
+
+                            return const SizedBox();
                           },
                         ),
-                      );
-                    },
                   ),
-                ),
 
-                SizedBox(height: context.spacing.s4),
+                  /// BOTTOM SWIPE CONTROLLER
+                  GestureDetector(
+                    onHorizontalDragEnd: handleSwipe,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(
+                            right: context.spacing.s10,
+                            bottom: context.spacing.s5,
+                          ),
+                          padding: EdgeInsets.all(context.spacing.s5),
+                          decoration: BoxDecoration(
+                            gradient: RadialGradient(
+                              colors: [
+                                context.colors.infoContainer,
+                                context.af.colors.background,
+                              ],
+                            ),
+                            shape: BoxShape.circle,
+                          ),
 
-                /// CONTENT
-                Expanded(
-                  child: BlocBuilder<CreatorDetailsCubit, CreatorDetailsState>(
-                    builder: (context, state) {
-
-                      if (state is CreatorDetailLoading) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
-                      if (state is CreatorDetailError) {
-                        return Center(child: Text(state.message));
-                      }
-
-                      if (state is CreatorDetailLoaded) {
-                        return SingleChildScrollView(
-                          child: _buildSegmentContent(state.data),
-                        );
-                      }
-
-                      return const SizedBox();
-                    },
-                  ),
-                ),
-
-                /// BOTTOM SWIPE CONTROLLER
-                GestureDetector(
-                  onHorizontalDragEnd: handleSwipe,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-
-                      Container(
-                        margin: EdgeInsets.only(
-                          right: context.spacing.s10,
-                          bottom: context.spacing.s5,
-                        ),
-                        padding: EdgeInsets.all(context.spacing.s5),
-                        decoration: BoxDecoration(
-                          gradient: RadialGradient(colors: [context.colors.infoContainer,context.af.colors.background]),
-                          shape: BoxShape.circle,
-                        ),
-
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.easeOut,
-                          width: 20,
-                          height: 20,
-
-                          child: AnimatedAlign(
+                          child: AnimatedContainer(
                             duration: const Duration(milliseconds: 250),
-                            alignment: Alignment(alignmentX, 0),
+                            curve: Curves.easeOut,
+                            width: 20,
+                            height: 20,
 
-                            child: Container(
-                              width: 10,
-                              height: 10,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: context.colors.successContainer,
+                            child: AnimatedAlign(
+                              duration: const Duration(milliseconds: 250),
+                              alignment: Alignment(alignmentX, 0),
+
+                              child: Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: context.colors.successContainer,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-
-              ],
+                ],
+              ),
             ),
           ),
         ),

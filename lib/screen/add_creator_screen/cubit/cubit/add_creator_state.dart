@@ -19,6 +19,11 @@ final class CreatorSaveSuccess extends AddCreatorState {
   const CreatorSaveSuccess(this.creatorId);
 }
 
+final class CreatorUpdatedSuccess extends AddCreatorState{
+  final int creatorId;
+  const CreatorUpdatedSuccess(this.creatorId);
+}
+
 final class CreatorSaveError extends AddCreatorState {
   final String message;
 

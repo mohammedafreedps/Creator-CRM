@@ -3,6 +3,7 @@ class CreatorDraft {
   // =============================
   // CREATOR (Step 1)
   // =============================
+  int? id;
   String? name;
   String? platform;
   String? niche;
