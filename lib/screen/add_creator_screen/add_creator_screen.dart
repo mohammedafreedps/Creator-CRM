@@ -348,9 +348,9 @@ class CreatorForm extends StatelessWidget {
             value: draft.platform,
             hintText: 'Platform',
             items: const [
-              DropdownMenuItem(value: 'instagram', child: Text('Instagram')),
-              DropdownMenuItem(value: 'facebook', child: Text('Facebook')),
-              DropdownMenuItem(value: 'youtube', child: Text('Youtube')),
+              DropdownMenuItem(value: 'Instagram', child: Text('Instagram')),
+              DropdownMenuItem(value: 'Facebook', child: Text('Facebook')),
+              DropdownMenuItem(value: 'Youtube', child: Text('Youtube')),
             ],
             onChanged: (value) {
               draft.platform = value;
@@ -361,25 +361,25 @@ class CreatorForm extends StatelessWidget {
             value: draft.niche,
             hintText: 'Niche',
             items: const [
-              DropdownMenuItem(value: "food", child: Text("Food")),
-              DropdownMenuItem(value: "lifestyle", child: Text("Lifestyle")),
-              DropdownMenuItem(value: "family", child: Text("Family")),
-              DropdownMenuItem(value: "fashion", child: Text("Fashion")),
-              DropdownMenuItem(value: "beauty", child: Text("Beauty")),
-              DropdownMenuItem(value: "travel", child: Text("Travel")),
-              DropdownMenuItem(value: "fitness", child: Text("Fitness")),
-              DropdownMenuItem(value: "tech", child: Text("Tech")),
+              DropdownMenuItem(value: "Food", child: Text("Food")),
+              DropdownMenuItem(value: "Lifestyle", child: Text("Lifestyle")),
+              DropdownMenuItem(value: "Family", child: Text("Family")),
+              DropdownMenuItem(value: "Fashion", child: Text("Fashion")),
+              DropdownMenuItem(value: "Beauty", child: Text("Beauty")),
+              DropdownMenuItem(value: "Travel", child: Text("Travel")),
+              DropdownMenuItem(value: "Fitness", child: Text("Fitness")),
+              DropdownMenuItem(value: "Tech", child: Text("Tech")),
               DropdownMenuItem(
-                value: "entertainment",
+                value: "Entertainment",
                 child: Text("Entertainment"),
               ),
-              DropdownMenuItem(value: "education", child: Text("Education")),
-              DropdownMenuItem(value: "cooking", child: Text("Cooking")),
+              DropdownMenuItem(value: "Education", child: Text("Education")),
+              DropdownMenuItem(value: "Cooking", child: Text("Cooking")),
               DropdownMenuItem(
-                value: "restaurant_review",
+                value: "Restaurant Review",
                 child: Text("Restaurant Review"),
               ),
-              DropdownMenuItem(value: "daily_vlog", child: Text("Daily Vlog")),
+              DropdownMenuItem(value: "Daily Vlog", child: Text("Daily Vlog")),
             ],
             onChanged: (value) {
               draft.niche = value;
@@ -419,24 +419,24 @@ class OutReach extends StatelessWidget {
             hintText: 'Status',
             items: const [
               DropdownMenuItem(
-                value: 'message sent',
+                value: 'Message Sent',
                 child: Text('Message Sent'),
               ),
-              DropdownMenuItem(value: 'replied', child: Text('Replied')),
+              DropdownMenuItem(value: 'Replied', child: Text('Replied')),
               DropdownMenuItem(
-                value: 'negotiating',
+                value: 'Negotiating',
                 child: Text('Negotiating'),
               ),
               DropdownMenuItem(
-                value: 'deal agreed',
+                value: 'Deal Agreed',
                 child: Text('Deal Agreed'),
               ),
               DropdownMenuItem(
-                value: 'no response',
+                value: 'No Response',
                 child: Text('No Response'),
               ),
-              DropdownMenuItem(value: 'completed', child: Text('Completed')),
-              DropdownMenuItem(value: 'declined', child: Text('Declined')),
+              DropdownMenuItem(value: 'Completed', child: Text('Completed')),
+              DropdownMenuItem(value: 'Declined', child: Text('Declined')),
             ],
             onChanged: (value) {
               draft.outreachStatus = value;
@@ -465,8 +465,8 @@ class OutReach extends StatelessWidget {
             value: draft.communicationChannel,
             hintText: 'Communication Channel',
             items: const [
-              DropdownMenuItem(value: 'instagram', child: Text('Instagram')),
-              DropdownMenuItem(value: 'whatsapp', child: Text('Whatsapp')),
+              DropdownMenuItem(value: 'Instagram', child: Text('Instagram')),
+              DropdownMenuItem(value: 'Whatsapp', child: Text('Whatsapp')),
             ],
             onChanged: (value) {
               draft.communicationChannel = value;
@@ -489,13 +489,13 @@ class Deals extends StatelessWidget {
       child: Column(
         children: [
           AppTextField(
-            initialValue: draft.askedPrice.toString(),
+            initialValue: draft.askedPrice == null ? '': draft.askedPrice.toString(),
             hintText: 'Asked Price',
             onChanged: (v) => draft.askedPrice = double.tryParse(v),
           ),
 
           AppTextField(
-            initialValue: draft.finalPrice.toString(),
+            initialValue: draft.finalPrice == null ? '' : draft.finalPrice.toString(),
             hintText: 'Final Price',
             onChanged: (v) => draft.finalPrice = double.tryParse(v),
           ),
@@ -516,8 +516,8 @@ class Deals extends StatelessWidget {
             value: draft.collaborationType,
             hintText: 'Collaboration Type',
             items: const [
-              DropdownMenuItem(value: 'barter', child: Text('Barter')),
-              DropdownMenuItem(value: 'paid', child: Text('Paid + Product')),
+              DropdownMenuItem(value: 'Barter', child: Text('Barter')),
+              DropdownMenuItem(value: 'Paid', child: Text('Paid + Product')),
             ],
             onChanged: (value) {
               draft.collaborationType = value;
@@ -569,6 +569,8 @@ class ProductTracking extends StatelessWidget {
             items: const [
               DropdownMenuItem(value: 'DTDC', child: Text('DTDC')),
               DropdownMenuItem(value: 'Delhivery', child: Text('Delhivery')),
+              DropdownMenuItem(value: 'Amazone', child: Text('Delhivery')),
+              DropdownMenuItem(value: 'Flipkart', child: Text('Delhivery')),
               DropdownMenuItem(value: 'Porter', child: Text('Porter')),
             ],
             onChanged: (value) {
@@ -631,7 +633,8 @@ class Content extends StatelessWidget {
             value: draft.adPermission,
             hintText: 'Ad Permission',
             items: const [
-              DropdownMenuItem(value: true, child: Text('Yes')),
+              DropdownMenuItem(
+                value: true, child: Text('Yes')),
               DropdownMenuItem(value: false, child: Text('No')),
             ],
             onChanged: (value) {
@@ -676,8 +679,8 @@ class Payment extends StatelessWidget {
             value: draft.paymentStatus,
             hintText: 'Status',
             items: const [
-              DropdownMenuItem(value: 'paid', child: Text('Paid')),
-              DropdownMenuItem(value: 'pending', child: Text('Pending')),
+              DropdownMenuItem(value: 'Paid', child: Text('Paid')),
+              DropdownMenuItem(value: 'Pending', child: Text('Pending')),
             ],
             onChanged: (value) {
               draft.paymentStatus = value;
@@ -688,8 +691,8 @@ class Payment extends StatelessWidget {
             value: draft.paymentMethod,
             hintText: 'Payment Method',
             items: const [
-              DropdownMenuItem(value: 'upi', child: Text('UPI')),
-              DropdownMenuItem(value: 'bank', child: Text('Bank Transfer')),
+              DropdownMenuItem(value: 'UPI', child: Text('UPI')),
+              DropdownMenuItem(value: 'Bank Transfer', child: Text('Bank Transfer')),
             ],
             onChanged: (value) {
               draft.paymentMethod = value;

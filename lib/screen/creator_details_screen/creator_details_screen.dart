@@ -19,6 +19,10 @@ class CreatorDetailsScreen extends StatefulWidget {
 class _CreatorDetailsScreenState extends State<CreatorDetailsScreen> {
   final ScrollController chipScrollController = ScrollController();
 
+  DateTime? _lastSwipeTime;
+  static const int swipeDebounceMs = 300;
+  static const double minSwipeVelocity = 300;
+
   List<String> segment = [
     'Details',
     'Outreach',
@@ -74,18 +78,34 @@ class _CreatorDetailsScreenState extends State<CreatorDetailsScreen> {
   }
 
   void handleSwipe(DragEndDetails details) {
-    if (details.primaryVelocity == null) return;
+    final velocity = details.primaryVelocity;
 
-    if (details.primaryVelocity! < 0) {
+    if (velocity == null) return;
+
+    // Ignore small swipes
+    if (velocity.abs() < minSwipeVelocity) return;
+
+    // Debounce
+    final now = DateTime.now();
+    if (_lastSwipeTime != null &&
+        now.difference(_lastSwipeTime!).inMilliseconds < swipeDebounceMs) {
+      return;
+    }
+
+    _lastSwipeTime = now;
+
+    if (velocity < 0) {
       nextSegment();
     } else {
       previousSegment();
     }
 
     Future.delayed(const Duration(milliseconds: 200), () {
-      setState(() {
-        alignmentX = 0;
-      });
+      if (mounted) {
+        setState(() {
+          alignmentX = 0;
+        });
+      }
     });
   }
 
@@ -93,10 +113,11 @@ class _CreatorDetailsScreenState extends State<CreatorDetailsScreen> {
   Widget build(BuildContext context) {
     return BlocListener<AddCreatorCubit, AddCreatorState>(
       listener: (context, state) {
-        if(state is CreatorUpdatedSuccess){
-          context.read<CreatorDetailsCubit>().loadCreatorDetail(widget.creatorId);
+        if (state is CreatorUpdatedSuccess) {
+          context.read<CreatorDetailsCubit>().loadCreatorDetail(
+            widget.creatorId,
+          );
           context.read<ShowAllCreatorCubit>().loadCreators();
-          
         }
       },
       child: Scaffold(
@@ -119,7 +140,6 @@ class _CreatorDetailsScreenState extends State<CreatorDetailsScreen> {
                       ),
                       IconButton(
                         onPressed: () {
-                          
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -162,7 +182,7 @@ class _CreatorDetailsScreenState extends State<CreatorDetailsScreen> {
                     ),
                   ),
 
-                  SizedBox(height: context.spacing.s4),
+                  SizedBox(height: context.spacing.s16),
 
                   /// CONTENT
                   Expanded(
@@ -180,7 +200,6 @@ class _CreatorDetailsScreenState extends State<CreatorDetailsScreen> {
                             }
 
                             if (state is CreatorDetailLoaded) {
-                              print('rerenderd segment ui');
                               creatorFullDetail = state.data;
                               return SingleChildScrollView(
                                 child: _buildSegmentContent(state.data),
@@ -198,38 +217,41 @@ class _CreatorDetailsScreenState extends State<CreatorDetailsScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                            right: context.spacing.s10,
-                            bottom: context.spacing.s5,
-                          ),
-                          padding: EdgeInsets.all(context.spacing.s5),
-                          decoration: BoxDecoration(
-                            gradient: RadialGradient(
-                              colors: [
-                                context.colors.infoContainer,
-                                context.af.colors.background,
-                              ],
+                        Opacity(
+                          opacity: 0,
+                          child: Container(
+                            margin: EdgeInsets.only(
+                              right: context.spacing.s10,
+                              bottom: context.spacing.s5,
                             ),
-                            shape: BoxShape.circle,
-                          ),
-
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 250),
-                            curve: Curves.easeOut,
-                            width: 20,
-                            height: 20,
-
-                            child: AnimatedAlign(
+                            padding: EdgeInsets.all(context.spacing.s5),
+                            decoration: BoxDecoration(
+                              gradient: RadialGradient(
+                                colors: [
+                                  context.colors.infoContainer,
+                                  context.af.colors.background,
+                                ],
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                          
+                            child: AnimatedContainer(
                               duration: const Duration(milliseconds: 250),
-                              alignment: Alignment(alignmentX, 0),
-
-                              child: Container(
-                                width: 10,
-                                height: 10,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: context.colors.successContainer,
+                              curve: Curves.easeOut,
+                              width: 20,
+                              height: 20,
+                          
+                              child: AnimatedAlign(
+                                duration: const Duration(milliseconds: 250),
+                                alignment: Alignment(alignmentX, 0),
+                          
+                                child: Container(
+                                  width: 10,
+                                  height: 10,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: context.colors.successContainer,
+                                  ),
                                 ),
                               ),
                             ),
@@ -363,11 +385,11 @@ class _CreatorDetailsScreenState extends State<CreatorDetailsScreen> {
       children: [
         DetailRow(
           label: "Received",
-          value: c.contentReceived == 1 ? "Yes" : "No",
+          value: c.contentReceived ? "Yes" : "No",
         ),
         DetailRow(
           label: "Approved",
-          value: c.contentApproved == 1 ? "Yes" : "No",
+          value: c.contentApproved ? "Yes" : "No",
         ),
         DetailRow(label: "Posting Date", value: formatDate(c.postingDate)),
       ],
