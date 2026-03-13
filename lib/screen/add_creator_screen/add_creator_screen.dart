@@ -2,7 +2,7 @@ import 'package:afui/afui.dart';
 import 'package:creator_tracker/models/creator_draft_model.dart';
 import 'package:creator_tracker/screen/add_creator_screen/cubit/cubit/add_creator_cubit.dart';
 import 'package:creator_tracker/screen/creator_details_screen/cubit/cubit/creator_details_cubit.dart';
-import 'package:creator_tracker/screen/home_screen/cubit/cubit/show_all_creator_cubit.dart';
+import 'package:creator_tracker/screen/home_screen/cubit/show_all_creator/show_all_creator_cubit.dart';
 import 'package:creator_tracker/utils/iso_string_to_datetime.dart';
 import 'package:creator_tracker/widgets/app_datefield.dart';
 import 'package:creator_tracker/widgets/app_dropdown.dart';

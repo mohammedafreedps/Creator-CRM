@@ -2,7 +2,7 @@ import 'package:afui/afui.dart';
 import 'package:creator_tracker/screen/add_creator_screen/add_creator_screen.dart';
 import 'package:creator_tracker/screen/add_creator_screen/cubit/cubit/add_creator_cubit.dart';
 import 'package:creator_tracker/screen/creator_details_screen/cubit/cubit/creator_details_cubit.dart';
-import 'package:creator_tracker/screen/home_screen/cubit/cubit/show_all_creator_cubit.dart';
+import 'package:creator_tracker/screen/home_screen/cubit/show_all_creator/show_all_creator_cubit.dart';
 import 'package:creator_tracker/utils/format_date.dart';
 import 'package:creator_tracker/widgets/app_filter_chip.dart';
 import 'package:flutter/material.dart';
