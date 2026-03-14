@@ -391,7 +391,11 @@ class _CreatorDetailsScreenState extends State<CreatorDetailsScreen> {
           label: "Approved",
           value: c.contentApproved ? "Yes" : "No",
         ),
-        DetailRow(label: "Posting Date", value: formatDate(c.postingDate)),
+        DetailRow(
+          label: "Creator Brief Sent",
+          value: c.creatorBriefSent ? "Yes" : "No",
+        ),
+        DetailRow(label: "Posting Date", value: formatDate(c.postedDate)),
       ],
     );
   }

@@ -83,7 +83,8 @@ class _AddCreatorScreenState extends State<AddCreatorScreen> {
     //--------------------------------------------------------------
     draft.contentReceived = fullDetail?.content?.contentReceived;
     draft.contentApproved = fullDetail?.content?.contentApproved;
-    draft.postingDate = isoStringToDateTime(fullDetail?.content?.postingDate);
+    draft.creatorBraftSent = fullDetail?.content?.creatorBriefSent;
+    draft.postedDate = isoStringToDateTime(fullDetail?.content?.postedDate);
     draft.contentLink = fullDetail?.content?.contentLink;
     draft.adPermission = fullDetail?.content?.adPermission;
 
@@ -628,6 +629,17 @@ class Content extends StatelessWidget {
               draft.contentApproved = value;
             },
           ),
+          AppDropdown(
+            value: draft.creatorBraftSent,
+            hintText: 'Creator Brief Sent',
+            items: const [
+              DropdownMenuItem(value: true, child: Text('Yes')),
+              DropdownMenuItem(value: false, child: Text('No')),
+            ],
+            onChanged: (value) {
+              draft.creatorBraftSent = value;
+            },
+          ),
 
           AppDropdown(
             value: draft.adPermission,
@@ -643,9 +655,9 @@ class Content extends StatelessWidget {
           ),
 
           AppDateField(
-            value: draft.postingDate,
-            hintText: 'Posting Date',
-            onChanged: (v) => draft.postingDate = v,
+            value: draft.postedDate,
+            hintText: 'Posted Date',
+            onChanged: (v) => draft.postedDate = v,
           ),
         ],
       ),

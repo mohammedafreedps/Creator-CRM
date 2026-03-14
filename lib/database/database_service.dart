@@ -94,7 +94,8 @@ class DatabaseService {
       creator_id INTEGER,
       content_received INTEGER,
       content_approved INTEGER,
-      posting_date TEXT,
+      creator_brief_sent INTEGER,
+      posted_date TEXT,
       content_link TEXT,
       ad_permission INTEGER,
       FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE

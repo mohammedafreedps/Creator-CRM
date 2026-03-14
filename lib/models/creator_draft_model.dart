@@ -52,7 +52,8 @@ class CreatorDraft {
   // =============================
   bool? contentReceived;
   bool? contentApproved;
-  DateTime? postingDate;
+  bool? creatorBraftSent;
+  DateTime? postedDate;
   String? contentLink;
   bool? adPermission;
 
@@ -103,7 +104,8 @@ class CreatorDraft {
 
     "contentReceived": contentReceived,
     "contentApproved": contentApproved,
-    "postingDate": postingDate,
+    "creatorBraftSent": creatorBraftSent,
+    "postedDate": postedDate,
     "adPermission": adPermission,
 
     "amount": amount,

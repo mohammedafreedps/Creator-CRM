@@ -83,7 +83,8 @@ class AddCreatorCubit extends Cubit<AddCreatorState> {
             "creator_id": creatorId,
             "content_received": draft.contentReceived == true ? 1 : 0,
             "content_approved": draft.contentApproved == true ? 1 : 0,
-            "posting_date": draft.postingDate?.toIso8601String(),
+            "creator_brief_sent" : draft.creatorBraftSent == true ? 1 : 0,
+            "posted_date": draft.postedDate?.toIso8601String(),
             "content_link": draft.contentLink,
             "ad_permission": draft.adPermission == true ? 1 : 0,
           });
@@ -145,7 +146,7 @@ class AddCreatorCubit extends Cubit<AddCreatorState> {
   bool _hasContentData(CreatorDraft draft) {
     return draft.contentReceived != null ||
         draft.contentApproved != null ||
-        draft.postingDate != null ||
+        draft.postedDate != null ||
         draft.contentLink != null;
   }
 
@@ -301,7 +302,8 @@ class AddCreatorCubit extends Cubit<AddCreatorState> {
           "creator_id": draft.id,
           "content_received": draft.contentReceived == true ? 1 : 0,
           "content_approved": draft.contentApproved == true ? 1 : 0,
-          "posting_date": draft.postingDate?.toIso8601String(),
+          "creator_brief_sent" : draft.creatorBraftSent == true ? 1 : 0,
+          "posted_date": draft.postedDate?.toIso8601String(),
           "content_link": draft.contentLink,
           "ad_permission": draft.adPermission == true ? 1 : 0,
         };
