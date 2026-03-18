@@ -26,6 +26,15 @@ class _HomeScreenState extends State<HomeScreen> {
   final FocusNode _searchFocusNode = FocusNode();
   bool _showFab = true;
 
+  String selectedFilter = 'All';
+
+  final List<String> filters = [
+    'All',
+    'Completed',
+    'Negotiation',
+    'Message Sent',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -62,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return BlocListener<DeleteCreatorCubit, DeleteCreatorState>(
       listener: (context, state) {
-        if(state is DeleteCreatorSuccess){
+        if (state is DeleteCreatorSuccess) {
           appTopSnackBar(context, 'Creator Succusfully Deleted');
           context.read<ShowAllCreatorCubit>().loadCreators();
         }
@@ -112,25 +121,24 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      FilterChip(
-                        selected: false,
-                        showCheckmark: false,
-                        side: BorderSide.none,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: context.spacing.s2,
-                          vertical: context.spacing.s1,
-                        ),
-                        label: Text('data dsfsadfadf'),
-                        onSelected: (value) {},
-                      ),
-                      AppFilterChip(
-                        isSelected: false,
-                        label: 'text',
-                        onSelected: (value) {},
-                      ),
-                    ],
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: filters.map((filter) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: AppFilterChip(
+                            isSelected: selectedFilter == filter,
+                            label: filter,
+                            onSelected: (_) {
+                              setState(() {
+                                selectedFilter = filter;
+                              });
+                            },
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
                   SizedBox(height: context.spacing.s3),
                   BlocConsumer<ShowAllCreatorCubit, ShowAllCreatorState>(
@@ -141,7 +149,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     builder: (context, state) {
                       if (state is CreatorListEmpty) {
-                        return Expanded(child: Center(child: Text('data is Empty')));
+                        return Expanded(
+                          child: Center(child: Text('data is Empty')),
+                        );
                       }
                       if (state is CreatorListLoading) {
                         return Expanded(
@@ -162,10 +172,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                     message:
                                         'Are you sure you want to delete this creator?',
                                     onYes: () {
-                                      if(state.creators[index].creator.id == null){
+                                      if (state.creators[index].creator.id ==
+                                          null) {
                                         return;
                                       }
-                                      context.read<DeleteCreatorCubit>().deleteCreator(state.creators[index].creator.id!);
+                                      context
+                                          .read<DeleteCreatorCubit>()
+                                          .deleteCreator(
+                                            state.creators[index].creator.id!,
+                                          );
                                     },
                                   );
                                 }

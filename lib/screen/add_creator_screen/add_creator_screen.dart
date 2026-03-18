@@ -463,7 +463,7 @@ class OutReach extends StatelessWidget {
           ),
 
           AppDropdown(
-            value: draft.communicationChannel!.isEmpty
+            value: draft.communicationChannel == null || draft.communicationChannel!.isEmpty
                 ? null
                 : draft.communicationChannel,
             hintText: 'Communication Channel',
