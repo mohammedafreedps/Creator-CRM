@@ -141,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     builder: (context, state) {
                       if (state is CreatorListEmpty) {
-                        return Expanded(child: Text('data is Empty'));
+                        return Expanded(child: Center(child: Text('data is Empty')));
                       }
                       if (state is CreatorListLoading) {
                         return Expanded(

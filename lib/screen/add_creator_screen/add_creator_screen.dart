@@ -142,7 +142,7 @@ class _AddCreatorScreenState extends State<AddCreatorScreen> {
                       if (state is CreatorSaveError) {
                         appTopSnackBar(context, state.message);
                       }
-                      if(state is CreatorUpdatedSuccess){
+                      if (state is CreatorUpdatedSuccess) {
                         appTopSnackBar(
                           context,
                           'Creator update successfully',
@@ -463,7 +463,9 @@ class OutReach extends StatelessWidget {
           ),
 
           AppDropdown(
-            value: draft.communicationChannel,
+            value: draft.communicationChannel!.isEmpty
+                ? null
+                : draft.communicationChannel,
             hintText: 'Communication Channel',
             items: const [
               DropdownMenuItem(value: 'Instagram', child: Text('Instagram')),
@@ -490,13 +492,17 @@ class Deals extends StatelessWidget {
       child: Column(
         children: [
           AppTextField(
-            initialValue: draft.askedPrice == null ? '': draft.askedPrice.toString(),
+            initialValue: draft.askedPrice == null
+                ? ''
+                : draft.askedPrice.toString(),
             hintText: 'Asked Price',
             onChanged: (v) => draft.askedPrice = double.tryParse(v),
           ),
 
           AppTextField(
-            initialValue: draft.finalPrice == null ? '' : draft.finalPrice.toString(),
+            initialValue: draft.finalPrice == null
+                ? ''
+                : draft.finalPrice.toString(),
             hintText: 'Final Price',
             onChanged: (v) => draft.finalPrice = double.tryParse(v),
           ),
@@ -570,8 +576,8 @@ class ProductTracking extends StatelessWidget {
             items: const [
               DropdownMenuItem(value: 'DTDC', child: Text('DTDC')),
               DropdownMenuItem(value: 'Delhivery', child: Text('Delhivery')),
-              DropdownMenuItem(value: 'Amazone', child: Text('Delhivery')),
-              DropdownMenuItem(value: 'Flipkart', child: Text('Delhivery')),
+              DropdownMenuItem(value: 'Amazone', child: Text('Amazone')),
+              DropdownMenuItem(value: 'Flipkart', child: Text('Flipkart')),
               DropdownMenuItem(value: 'Porter', child: Text('Porter')),
             ],
             onChanged: (value) {
@@ -645,8 +651,7 @@ class Content extends StatelessWidget {
             value: draft.adPermission,
             hintText: 'Ad Permission',
             items: const [
-              DropdownMenuItem(
-                value: true, child: Text('Yes')),
+              DropdownMenuItem(value: true, child: Text('Yes')),
               DropdownMenuItem(value: false, child: Text('No')),
             ],
             onChanged: (value) {
@@ -676,7 +681,7 @@ class Payment extends StatelessWidget {
       child: Column(
         children: [
           AppTextField(
-            initialValue: draft.amount.toString(),
+            initialValue: draft.amount == null ? '' : draft.amount.toString(),
             hintText: 'Amount Paid',
             onChanged: (v) => draft.amount = double.tryParse(v),
           ),
@@ -704,7 +709,10 @@ class Payment extends StatelessWidget {
             hintText: 'Payment Method',
             items: const [
               DropdownMenuItem(value: 'UPI', child: Text('UPI')),
-              DropdownMenuItem(value: 'Bank Transfer', child: Text('Bank Transfer')),
+              DropdownMenuItem(
+                value: 'Bank Transfer',
+                child: Text('Bank Transfer'),
+              ),
             ],
             onChanged: (value) {
               draft.paymentMethod = value;
@@ -732,7 +740,11 @@ class Notes extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          AppTextField(initialValue: draft.note, hintText: 'Notes', onChanged: (v) => draft.note = v),
+          AppTextField(
+            initialValue: draft.note,
+            hintText: 'Notes',
+            onChanged: (v) => draft.note = v,
+          ),
         ],
       ),
     );
