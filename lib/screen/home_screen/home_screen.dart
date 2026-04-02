@@ -8,11 +8,10 @@ import 'package:creator_tracker/service/settings_service.dart';
 import 'package:creator_tracker/utils/format_date.dart';
 import 'package:creator_tracker/widgets/app_filter_chip.dart';
 import 'package:creator_tracker/widgets/app_show_yes_no_dialoge.dart';
-import 'package:creator_tracker/widgets/app_snackbar.dart';
-import 'package:creator_tracker/widgets/app_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:afui/afui.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -72,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocListener<DeleteCreatorCubit, DeleteCreatorState>(
       listener: (context, state) {
         if (state is DeleteCreatorSuccess) {
-          appTopSnackBar(context, 'Creator Succusfully Deleted');
+         context.showTopSnackBar('Creator Succusfully Deleted');
           context.read<ShowAllCreatorCubit>().loadCreators();
         }
       },
@@ -144,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   BlocConsumer<ShowAllCreatorCubit, ShowAllCreatorState>(
                     listener: (context, state) {
                       if (state is CreatorListError) {
-                        appTopSnackBar(context, state.message);
+                        context.showTopSnackBar(state.message);
                       }
                     },
                     builder: (context, state) {

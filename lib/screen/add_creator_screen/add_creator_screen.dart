@@ -6,8 +6,6 @@ import 'package:creator_tracker/screen/home_screen/cubit/show_all_creator/show_a
 import 'package:creator_tracker/utils/iso_string_to_datetime.dart';
 import 'package:creator_tracker/widgets/app_datefield.dart';
 import 'package:creator_tracker/widgets/app_dropdown.dart';
-import 'package:creator_tracker/widgets/app_snackbar.dart';
-import 'package:creator_tracker/widgets/app_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -140,11 +138,10 @@ class _AddCreatorScreenState extends State<AddCreatorScreen> {
                   BlocConsumer<AddCreatorCubit, AddCreatorState>(
                     listener: (context, state) {
                       if (state is CreatorSaveError) {
-                        appTopSnackBar(context, state.message);
+                        context.showTopSnackBar(state.message);
                       }
                       if (state is CreatorUpdatedSuccess) {
-                        appTopSnackBar(
-                          context,
+                         context.showTopSnackBar(
                           'Creator update successfully',
                           color: context.af.colors.successContainer,
                         );
@@ -152,8 +149,7 @@ class _AddCreatorScreenState extends State<AddCreatorScreen> {
                         Navigator.pop(context);
                       }
                       if (state is CreatorSaveSuccess) {
-                        appTopSnackBar(
-                          context,
+                        context.showTopSnackBar(
                           'Creator saved successfully',
                           color: context.af.colors.successContainer,
                         );
@@ -172,7 +168,7 @@ class _AddCreatorScreenState extends State<AddCreatorScreen> {
                               draft.platform == null ||
                               draft.followers == null ||
                               draft.followers!.isEmpty) {
-                            appTopSnackBar(context, '* Fields are required');
+                            context.showTopSnackBar('* Fields are required');
                             return;
                           }
 
